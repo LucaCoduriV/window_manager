@@ -2,6 +2,9 @@
 
 #include <flutter_linux/flutter_linux.h>
 #include <gtk/gtk.h>
+#include <string>
+#include <cstring>
+#include <gtk-layer-shell/gtk-layer-shell.h>
 
 #define WINDOW_MANAGER_PLUGIN(obj)                                     \
   (G_TYPE_CHECK_INSTANCE_CAST((obj), window_manager_plugin_get_type(), \
@@ -802,6 +805,56 @@ static FlMethodResponse* set_brightness(WindowManagerPlugin* self,
   return FL_METHOD_RESPONSE(fl_method_success_response_new(result));
 }
 
+static void setAnchor(WindowManagerPlugin* self, const std::string &edge, bool anchor) {
+    if (std::strcmp(edge.c_str(), "LayerEdge.left") == 0){
+        gtk_layer_set_anchor(get_window(self), GTK_LAYER_SHELL_EDGE_LEFT, anchor);
+    } else if (std::strcmp(edge.c_str(), "LayerEdge.right") == 0){
+        gtk_layer_set_anchor(get_window(self), GTK_LAYER_SHELL_EDGE_RIGHT, anchor);
+    } else if (std::strcmp(edge.c_str(), "LayerEdge.top") == 0){
+        gtk_layer_set_anchor(get_window(self), GTK_LAYER_SHELL_EDGE_TOP, anchor);
+    } else if (std::strcmp(edge.c_str(), "LayerEdge.bottom") == 0){
+        gtk_layer_set_anchor(get_window(self), GTK_LAYER_SHELL_EDGE_BOTTOM, anchor);
+    }
+}
+
+static void enableAutoExclusiveZone(WindowManagerPlugin* self) {
+    gtk_layer_auto_exclusive_zone_enable(get_window(self));
+}
+
+static void setMargin(WindowManagerPlugin* self, const std::string &edge, int margin) {
+    if (std::strcmp(edge.c_str(), "LayerEdge.left") == 0){
+        gtk_layer_set_margin(get_window(self), GTK_LAYER_SHELL_EDGE_LEFT, margin);
+    } else if (std::strcmp(edge.c_str(), "LayerEdge.right") == 0){
+        gtk_layer_set_margin(get_window(self), GTK_LAYER_SHELL_EDGE_RIGHT, margin);
+    } else if (std::strcmp(edge.c_str(), "LayerEdge.top") == 0){
+        gtk_layer_set_margin(get_window(self), GTK_LAYER_SHELL_EDGE_TOP, margin);
+    } else if (std::strcmp(edge.c_str(), "LayerEdge.bottom") == 0){
+        gtk_layer_set_margin(get_window(self), GTK_LAYER_SHELL_EDGE_BOTTOM, margin);
+    }
+}
+
+static void setLayer(WindowManagerPlugin* self, const std::string &layer) {
+    if (std::strcmp(layer.c_str(), "LayerSurface.background") == 0){
+        gtk_layer_set_layer(get_window(self), GTK_LAYER_SHELL_LAYER_BACKGROUND);
+    } else if (std::strcmp(layer.c_str(), "LayerSurface.bottom") == 0){
+        gtk_layer_set_layer(get_window(self), GTK_LAYER_SHELL_LAYER_BOTTOM);
+    } else if (std::strcmp(layer.c_str(), "LayerSurface.top") == 0){
+        gtk_layer_set_layer(get_window(self), GTK_LAYER_SHELL_LAYER_TOP);
+    } else if (std::strcmp(layer.c_str(), "LayerSurface.overlay") == 0){
+        gtk_layer_set_layer(get_window(self), GTK_LAYER_SHELL_LAYER_OVERLAY);
+    }
+}
+
+static void setLayerSize(WindowManagerPlugin* self, int width, int height) {
+    FlView* view = fl_plugin_registrar_get_view(self->registrar);
+    gtk_widget_set_size_request (GTK_WIDGET(view), width, height);
+    gtk_window_resize(get_window(self), width, height);
+}
+
+static void setExclusiveZone(WindowManagerPlugin* self, int zone) {
+    gtk_layer_set_exclusive_zone(get_window(self), zone);
+}
+
 // Called when a method call is received from Flutter.
 static void window_manager_plugin_handle_method_call(
     WindowManagerPlugin* self,
@@ -929,6 +982,49 @@ static void window_manager_plugin_handle_method_call(
     response = ungrab_keyboard(self);
   } else if (g_strcmp0(method, "setBrightness") == 0) {
     response = set_brightness(self, args);
+  } else if (strcmp(method, "setLayerSize") == 0) {
+      auto height = fl_value_get_float(fl_value_lookup_string(args, "height"));
+      auto width = fl_value_get_float(fl_value_lookup_string(args, "width"));
+      setLayerSize(self, width, height);
+      response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
+  } else if (strcmp(method, "autoExclusiveZoneIsEnabled") == 0) {
+      response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
+  } else if (strcmp(method, "enableAutoExclusiveZone") == 0) {
+      enableAutoExclusiveZone(self);
+      response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
+  } else if (strcmp(method, "getAnchor") == 0) {
+      response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
+  } else if (strcmp(method, "getExclusiveZone") == 0) {
+      response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
+  } else if (strcmp(method, "getKeyboardMode") == 0) {
+      response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
+  } else if (strcmp(method, "getLayer") == 0) {
+      response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
+  } else if (strcmp(method, "getMargin") == 0) {
+      response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
+  } else if (strcmp(method, "setAnchor") == 0) {
+      auto edge = fl_value_get_string(fl_value_lookup_string(args, "edge"));
+      auto anchor = fl_value_get_bool(fl_value_lookup_string(args, "anchor"));
+      setAnchor(self, edge, anchor);
+      response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
+
+  } else if (strcmp(method, "setExclusiveZone") == 0) {
+      auto size = fl_value_get_int(fl_value_lookup_string(args, "size"));
+      setExclusiveZone(self, size);
+      response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
+  } else if (strcmp(method, "setKeyboardInteractivity") == 0) {
+      response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
+  } else if (strcmp(method, "setKeyboardMode") == 0) {
+      response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
+  } else if (strcmp(method, "setLayer") == 0) {
+      auto layer = fl_value_get_string(fl_value_lookup_string(args, "layer"));
+      setLayer(self, layer);
+      response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
+  } else if (strcmp(method, "setMargin") == 0) {
+      auto edge = fl_value_get_string(fl_value_lookup_string(args, "edge"));
+      auto margin = fl_value_get_int(fl_value_lookup_string(args, "margin"));
+      setMargin(self, edge, margin);
+      response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
   } else {
     response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
   }

@@ -746,6 +746,117 @@ class WindowManager {
   Future<bool> ungrabKeyboard() async {
     return await _channel.invokeMethod('ungrabKeyboard');
   }
+
+  Future<void> setLayerSize(Size size) {
+    return _channel.invokeMethod('setLayerSize', <String, dynamic>{
+      'height': size.height,
+      'width': size.width,
+    });
+  }
+
+  Future<void> setFrameAutosaveName(String name) {
+    return _channel.invokeMethod('setFrameAutosaveName', <String, dynamic>{
+      'name': name,
+    });
+  }
+
+  Future<bool> autoExclusiveZoneIsEnabled() {
+    return _channel.invokeMethod('autoExclusiveZoneIsEnabled') as Future<bool>;
+  }
+
+  Future<void> enableAutoExclusiveZone() {
+    return _channel.invokeMethod('enableAutoExclusiveZone');
+  }
+
+  Future<bool> getAnchor(LayerEdge edge) {
+    return _channel.invokeMethod('getAnchor', <String, dynamic>{
+      'edge': edge.toString(),
+    }) as Future<bool>;
+  }
+
+  Future<int> getExclusiveZone() {
+    return _channel.invokeMethod('getExclusiveZone') as Future<int>;
+  }
+
+  Future<bool> getKeyboardInteractivity() {
+    return _channel.invokeMethod('getKeyboardInteractivity') as Future<bool>;
+  }
+
+  Future<LayerShellKeyboardMode> getKeyboardMode() async {
+    final response = await (_channel.invokeMethod('getKeyboardMode') as Future<String>);
+    return LayerShellKeyboardMode.values.firstWhere((element) => element.toString() == response);
+  }
+
+  Future<LayerSurface> getLayer() async {
+    final response = await (_channel.invokeMethod('getLayer') as Future<String>);
+    return LayerSurface.values.firstWhere((element) => element.toString() == response);
+  }
+
+  Future<int> getMargin(LayerEdge edge) {
+    return _channel.invokeMethod('getMargin', <String, dynamic>{
+      'edge': edge.toString(),
+    }) as Future<int>;
+  }
+
+  Future<void> setAnchor(LayerEdge edge, bool anchor) {
+    return _channel.invokeMethod('setAnchor', <String, dynamic>{
+      'edge': edge.toString(),
+      'anchor': anchor,
+    });
+  }
+
+  Future<void> setExclusiveZone(int size) {
+    return _channel.invokeMethod('setExclusiveZone', <String, dynamic>{
+      'size': size,
+    });
+  }
+
+  Future<void> setKeyboardInteractivity(bool interactivity) {
+    return _channel.invokeMethod('setKeyboardInteractivity', <String, dynamic>{
+      'interactivity': interactivity,
+    });
+  }
+
+  Future<void> setKeyboardMode(LayerShellKeyboardMode mode) {
+    return _channel.invokeMethod('setKeyboardMode', <String, dynamic>{
+      'mode': mode.toString(),
+    });
+  }
+
+  Future<void> setLayer(LayerSurface layer) {
+    return _channel.invokeMethod('setLayer', <String, dynamic>{
+      'layer': layer.toString(),
+    });
+  }
+
+  Future<void> setMargin(LayerEdge edge, int margin) {
+    return _channel.invokeMethod('setMargin', <String, dynamic>{
+      'edge': edge.toString(),
+      'margin': margin,
+    });
+  }
+
+}
+
+enum LayerShellKeyboardMode{
+  none,
+  exclusive,
+  onDemand,
+  entryNumber,
+}
+
+enum LayerSurface{
+  background,
+  bottom,
+  top,
+  overlay,
+}
+
+enum LayerEdge{
+  left,
+  right,
+  top,
+  bottom,
 }
 
 final windowManager = WindowManager.instance;

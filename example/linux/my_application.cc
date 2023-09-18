@@ -1,4 +1,5 @@
 #include "my_application.h"
+#include <gtk-layer-shell/gtk-layer-shell.h>
 
 #include <flutter_linux/flutter_linux.h>
 #ifdef GDK_WINDOWING_X11
@@ -47,7 +48,8 @@ static void my_application_activate(GApplication* application) {
   else {
     gtk_window_set_title(window, "window_manager_example");
   }
-
+  gtk_layer_init_for_window(GTK_WINDOW(window));
+  gtk_widget_set_size_request (GTK_WIDGET(window), 1280, 720);
   gtk_window_set_default_size(window, 1280, 720);
   gtk_widget_realize(GTK_WIDGET(window));
 

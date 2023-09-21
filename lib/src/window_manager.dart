@@ -836,10 +836,10 @@ class WindowManager {
     });
   }
 
-  Future<void> hideLayer(LayerEdge edge, int margin) {
+  Future<void> hideLayer() {
     return _channel.invokeMethod('hideLayer');
   }
-  Future<void> showLayer(LayerEdge edge, int margin) {
+  Future<void> showLayer() {
     return _channel.invokeMethod('showLayer');
   }
 }

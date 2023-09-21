@@ -1025,6 +1025,12 @@ static void window_manager_plugin_handle_method_call(
       auto margin = fl_value_get_int(fl_value_lookup_string(args, "margin"));
       setMargin(self, edge, margin);
       response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
+  } else if(strcmp(method, "hideLayer") == 0){
+    gtk_widget_hide(GTK_WIDGET(get_window(self)));
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(result));
+  } else if(strcmp(method, "showLayer") == 0) {
+    gtk_widget_show(GTK_WIDGET(get_window(self)));
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(result));
   } else {
     response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
   }

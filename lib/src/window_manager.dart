@@ -836,6 +836,12 @@ class WindowManager {
     });
   }
 
+  Future<void> hideLayer(LayerEdge edge, int margin) {
+    return _channel.invokeMethod('hideLayer');
+  }
+  Future<void> showLayer(LayerEdge edge, int margin) {
+    return _channel.invokeMethod('showLayer');
+  }
 }
 
 enum LayerShellKeyboardMode{

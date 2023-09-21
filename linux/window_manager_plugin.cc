@@ -1026,13 +1026,13 @@ static void window_manager_plugin_handle_method_call(
       setMargin(self, edge, margin);
       response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
   } else if(strcmp(method, "hideLayer") == 0){
-    gtk_widget_hide(GTK_WIDGET(get_window(self)));
-    response = FL_METHOD_RESPONSE(fl_method_success_response_new(result));
+      gtk_widget_hide(GTK_WIDGET(get_window(self)));
+      response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
   } else if(strcmp(method, "showLayer") == 0) {
-    gtk_widget_show(GTK_WIDGET(get_window(self)));
-    response = FL_METHOD_RESPONSE(fl_method_success_response_new(result));
+      gtk_widget_show(GTK_WIDGET(get_window(self)));
+      response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
   } else {
-    response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
+      response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
   }
 
   fl_method_call_respond(method_call, response, nullptr);
